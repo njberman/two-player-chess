@@ -1,5 +1,6 @@
 import Board from "./Board.js";
 import { SIZE } from "./constants.js";
+import { convertToFen } from "./convertToFen.js";
 let board;
 
 window.setup = () => {
@@ -16,4 +17,6 @@ window.onclick = function (evt) {
   const x = evt.clientX;
   const y = evt.clientY;
   board.userClick(x, y);
+  navigator.clipboard.writeText(convertToFen(board));
+  // console.log(convertToFen(board));
 };
