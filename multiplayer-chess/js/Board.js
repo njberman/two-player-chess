@@ -44,7 +44,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.BLACK,
-                  SPRITES.black.knight
+                  SPRITES.black.knight,
                 );
                 break;
               case 'b':
@@ -52,7 +52,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.BLACK,
-                  SPRITES.black.bishop
+                  SPRITES.black.bishop,
                 );
                 break;
               case 'q':
@@ -60,7 +60,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.BLACK,
-                  SPRITES.black.queen
+                  SPRITES.black.queen,
                 );
                 break;
               case 'k':
@@ -83,7 +83,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.WHITE,
-                  SPRITES.white.knight
+                  SPRITES.white.knight,
                 );
                 break;
               case 'B':
@@ -91,7 +91,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.WHITE,
-                  SPRITES.white.bishop
+                  SPRITES.white.bishop,
                 );
                 break;
               case 'Q':
@@ -99,7 +99,7 @@ export default class Board {
                   i,
                   j,
                   COLOUR.WHITE,
-                  SPRITES.white.queen
+                  SPRITES.white.queen,
                 );
                 break;
               case 'K':
@@ -203,7 +203,7 @@ export default class Board {
             this.getPos(move.x),
             this.getPos(move.y),
             this.sizeOfSquare,
-            this.sizeOfSquare
+            this.sizeOfSquare,
           );
         }
         pop();

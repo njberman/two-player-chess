@@ -1,11 +1,11 @@
-import Bishop from "./Bishop.js";
-import { COLOUR, SIZE } from "./constants.js";
-import Pawn from "./Pawn.js";
-import Rook from "./Rook.js";
-import Knight from "./Knight.js";
-import King from "./King.js";
-import Queen from "./Queen.js";
-import CheckFinder from "./CheckFinder.js";
+import Bishop from './Bishop.js';
+import { COLOUR, SIZE } from './constants.js';
+import Pawn from './Pawn.js';
+import Rook from './Rook.js';
+import Knight from './Knight.js';
+import King from './King.js';
+import Queen from './Queen.js';
+import CheckFinder from './CheckFinder.js';
 
 export default class Board {
   constructor() {
@@ -19,30 +19,32 @@ export default class Board {
     let tiles = this.createEmptyBoard();
 
     for (let i = 0; i < 8; i++) {
-      tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, "♟");
-      tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, "♙");
+      tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, '♟');
+      tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, '♙');
+      // tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, images.black.pawn);
+      // tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, images.white.pawn);
     }
 
-    tiles[0][0] = new Rook(0, 0, COLOUR.BLACK, "♜");
-    tiles[7][0] = new Rook(7, 0, COLOUR.BLACK, "♜");
-    tiles[0][7] = new Rook(0, 7, COLOUR.WHITE, "♖");
-    tiles[7][7] = new Rook(7, 7, COLOUR.WHITE, "♖");
+    tiles[0][0] = new Rook(0, 0, COLOUR.BLACK, '♜');
+    tiles[7][0] = new Rook(7, 0, COLOUR.BLACK, '♜');
+    tiles[0][7] = new Rook(0, 7, COLOUR.WHITE, '♖');
+    tiles[7][7] = new Rook(7, 7, COLOUR.WHITE, '♖');
 
-    tiles[2][0] = new Bishop(2, 0, COLOUR.BLACK, "♝");
-    tiles[5][0] = new Bishop(5, 0, COLOUR.BLACK, "♝");
-    tiles[2][7] = new Bishop(2, 7, COLOUR.WHITE, "♗");
-    tiles[5][7] = new Bishop(5, 7, COLOUR.WHITE, "♗");
+    tiles[2][0] = new Bishop(2, 0, COLOUR.BLACK, '♝');
+    tiles[5][0] = new Bishop(5, 0, COLOUR.BLACK, '♝');
+    tiles[2][7] = new Bishop(2, 7, COLOUR.WHITE, '♗');
+    tiles[5][7] = new Bishop(5, 7, COLOUR.WHITE, '♗');
 
-    tiles[1][0] = new Knight(1, 0, COLOUR.BLACK, "♞");
-    tiles[6][0] = new Knight(6, 0, COLOUR.BLACK, "♞");
-    tiles[1][7] = new Knight(1, 7, COLOUR.WHITE, "♘");
-    tiles[6][7] = new Knight(6, 7, COLOUR.WHITE, "♘");
+    tiles[1][0] = new Knight(1, 0, COLOUR.BLACK, '♞');
+    tiles[6][0] = new Knight(6, 0, COLOUR.BLACK, '♞');
+    tiles[1][7] = new Knight(1, 7, COLOUR.WHITE, '♘');
+    tiles[6][7] = new Knight(6, 7, COLOUR.WHITE, '♘');
 
-    tiles[4][0] = new King(4, 0, COLOUR.BLACK, "♚");
-    tiles[4][7] = new King(4, 7, COLOUR.WHITE, "♔");
+    tiles[4][0] = new King(4, 0, COLOUR.BLACK, '♚');
+    tiles[4][7] = new King(4, 7, COLOUR.WHITE, '♔');
 
-    tiles[3][0] = new Queen(3, 0, COLOUR.BLACK, "♛");
-    tiles[3][7] = new Queen(3, 7, COLOUR.WHITE, "♕");
+    tiles[3][0] = new Queen(3, 0, COLOUR.BLACK, '♛');
+    tiles[3][7] = new Queen(3, 7, COLOUR.WHITE, '♕');
 
     return tiles;
   }
@@ -70,12 +72,14 @@ export default class Board {
 
         if ((i + j) % 2 != 0) {
           push();
-          fill(205, 205, 205);
+          noStroke();
+          fill(75, 114, 153);
           rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
           pop();
         } else {
           push();
-          fill(255, 255, 255);
+          noStroke();
+          fill(234, 232, 210);
           rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
           pop();
         }
@@ -92,14 +96,14 @@ export default class Board {
       const tile = this.tiles[this.selected.x][this.selected.y];
       if (tile) {
         push();
-        fill(100, 255, 100, 100);
+        noStroke();
+        fill(0, 100);
 
         for (const move of this.legalMoves) {
-          rect(
+          ellipse(
             this.getPos(move.x),
             this.getPos(move.y),
-            this.sizeOfSquare,
-            this.sizeOfSquare
+            this.sizeOfSquare / 4,
           );
         }
         pop();
@@ -147,7 +151,7 @@ export default class Board {
     if (this.isInCheck) {
       let moves = CheckFinder.findMovesForCheckedPlayer(this.tiles, this.turn);
       if (moves.length === 0) {
-        console.log("Checkmate");
+        console.log('Checkmate');
       }
     }
   }

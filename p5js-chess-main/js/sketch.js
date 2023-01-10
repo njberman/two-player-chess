@@ -1,6 +1,6 @@
-import Board from "./Board.js";
-import { SIZE } from "./constants.js";
-import { convertToFen } from "./convertToFen.js";
+import Board from './Board.js';
+import { SIZE } from './constants.js';
+import { convertToFen } from './convertToFen.js';
 let board;
 
 window.setup = () => {

@@ -1,4 +1,6 @@
-import CheckFinder from "./CheckFinder.js";
+import CheckFinder from './CheckFinder.js';
+import { SIZE } from './constants.js';
+import images from './preloadImages.js';
 export default class Piece {
   constructor(x, y, colour, sprite) {
     this.x = x;
@@ -6,6 +8,7 @@ export default class Piece {
     this.colour = colour;
     this.hasMoved = false;
     this.sprite = sprite;
+    this.w = SIZE / 8;
   }
 
   userMove(toX, toY, tiles) {
@@ -36,7 +39,7 @@ export default class Piece {
           currentMove.x,
           currentMove.y,
           tiles,
-          this.colour
+          this.colour,
         )
       ) {
         moves.splice(i, 1);
@@ -50,6 +53,8 @@ export default class Piece {
   }
 
   draw(x, y) {
-    text(this.sprite, x, y);
+    //text(this.sprite, x, y);
+    imageMode(CENTER);
+    image(images[this.sprite], x, y, this.w, this.w);
   }
 }
