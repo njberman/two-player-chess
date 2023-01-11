@@ -1,11 +1,12 @@
 import Bishop from './Bishop.js';
-import { COLOUR, SIZE } from './constants.js';
+import { COLOUR, SIZE, ABC } from './constants.js';
 import Pawn from './Pawn.js';
 import Rook from './Rook.js';
 import Knight from './Knight.js';
 import King from './King.js';
 import Queen from './Queen.js';
 import CheckFinder from './CheckFinder.js';
+import { convertToFen } from './convertToFen.js';
 
 export default class Board {
   constructor() {
@@ -13,6 +14,11 @@ export default class Board {
     this.tiles = this.createTiles();
     this.turn = COLOUR.WHITE;
     this.isInCheck = false;
+    this.checkMate = false;
+
+    this.stockfish = new Worker('/2d-chess-ai/assets/stockfish.js');
+    this.depth = 5;
+    this.diff = 'easy';
   }
 
   createTiles() {
@@ -88,7 +94,58 @@ export default class Board {
         }
       }
     }
+    for (let i = 0; i < 8; i++) {
+      const x = this.getPos(i);
+      const y = this.getPos(7);
+      push();
+      textSize(20);
+      noStroke();
+      if (i % 2 === 0) {
+        fill(234, 232, 210);
+      } else {
+        fill(75, 114, 153);
+      }
+      textAlign(CENTER, CENTER);
+      const w = SIZE / 8;
+      text(ABC[i], x + w / 2 - 10, y - w / 2 + w - 12);
+      pop();
+    }
+    for (let i = 7; i >= 0; i--) {
+      const x = this.getPos(0);
+      const y = this.getPos(i);
+      push();
+      textSize(20);
+      noStroke();
+      if (i % 2 === 0) {
+        fill(75, 114, 153);
+      } else {
+        fill(234, 232, 210);
+      }
+      textAlign(CENTER, CENTER);
+      const w = SIZE / 8;
+      text(8 - i, x - w / 2 + 10, y + w / 2 - w + 15);
+      pop();
+    }
+
     this.displaySelected();
+
+    if (this.checkMate && this.isInCheck) {
+      push();
+      textAlign(CENTER, CENTER);
+      textSize(80);
+      noStroke();
+      fill(0, 200);
+      text('Checkmate!', SIZE / 2, SIZE / 2);
+      pop();
+    } else if (this.isInCheck) {
+      push();
+      textAlign(CENTER, CENTER);
+      textSize(80);
+      noStroke();
+      fill(0, 100);
+      text('Check!', SIZE / 2, SIZE / 2);
+      pop();
+    }
   }
 
   displaySelected() {
@@ -140,6 +197,63 @@ export default class Board {
     }
   }
 
+  aiMove() {
+    console.log(this.checkMate);
+    if (this.turn === COLOUR.BLACK && !this.checkMate) {
+      if (this.diff === 'easy') {
+        // Random moves
+        const blackPieces = [];
+        for (let col of this.tiles) {
+          for (let piece of col) {
+            if (piece && piece.colour === COLOUR.BLACK) blackPieces.push(piece);
+          }
+        }
+        let randMove;
+        while (!this.checkMate) {
+          const randPiece =
+            blackPieces[Math.floor(Math.random() * blackPieces.length)];
+          const randMoves = randPiece.findLegalMoves(this.tiles);
+          const { x, y } = randPiece;
+          if (randMoves.length > 0) {
+            const { x: x2, y: y2 } =
+              randMoves[Math.floor(Math.random() * randMoves.length)];
+            randMove = { from: { x, y }, to: { x: x2, y: y2 } };
+            break;
+          }
+        }
+        this.move(randMove.from, randMove.to);
+      } else if (this.diff === 'diff') {
+        // Stockfish
+        const board = this;
+        this.stockfish.postMessage('position fen ' + convertToFen(this));
+        this.stockfish.postMessage(`go depth ${this.depth}`);
+        this.stockfish.addEventListener('message', function (e) {
+          if (e.data.includes('bestmove')) {
+            console.log(e.data);
+            const blackBestMovePos = e.data.split(' ')[1];
+            board.blackBestMove = {
+              from: { x: undefined, y: undefined },
+              to: { x: undefined, y: undefined },
+            };
+            // Convert pos to x and y
+            board.blackBestMove.from.x = ABC.indexOf(blackBestMovePos[0]);
+            board.blackBestMove.from.y = 8 - blackBestMovePos[1];
+            board.blackBestMove.to.x = ABC.indexOf(blackBestMovePos[2]);
+            board.blackBestMove.to.y = 8 - blackBestMovePos[3];
+            if (
+              board.tiles[board.blackBestMove.from.x][
+                board.blackBestMove.from.y
+              ]
+            ) {
+              board.move(board.blackBestMove.from, board.blackBestMove.to);
+            }
+            return;
+          }
+        });
+      }
+    }
+  }
+
   move(from, to) {
     console.log(from, to);
     this.turn = this.turn === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
@@ -151,6 +265,19 @@ export default class Board {
     if (this.isInCheck) {
       let moves = CheckFinder.findMovesForCheckedPlayer(this.tiles, this.turn);
       if (moves.length === 0) {
+        this.checkMate = true;
+        console.log('Checkmate');
+      }
+    }
+
+    this.aiMove();
+
+    this.isInCheck = CheckFinder.isCurrentPlayerInCheck(this.tiles, this.turn);
+
+    if (this.isInCheck) {
+      let moves = CheckFinder.findMovesForCheckedPlayer(this.tiles, this.turn);
+      if (moves.length === 0) {
+        this.checkMate = true;
         console.log('Checkmate');
       }
     }

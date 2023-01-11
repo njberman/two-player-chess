@@ -1,0 +1,35 @@
+import Board from './Board.js';
+import { COLOUR, SIZE } from './constants.js';
+import { convertToFen } from './convertToFen.js';
+let board;
+
+const startButton = document.getElementById('start');
+const difficultyInput = document.getElementById('difficulty-options');
+
+startButton.addEventListener('click', () => {
+  startButton.innerText = 'Restart Game';
+  const diff = difficultyInput.value;
+
+  window.setup();
+  board.diff = diff;
+  loop();
+});
+
+window.setup = () => {
+  createCanvas(SIZE, SIZE);
+  board = new Board();
+  noLoop();
+};
+
+window.draw = () => {
+  background(220);
+  board.draw();
+};
+
+window.onclick = function (evt) {
+  const x = mouseX;
+  const y = mouseY;
+  board.userClick(x, y);
+  navigator.clipboard.writeText(convertToFen(board));
+  // console.log(convertToFen(board));
+};

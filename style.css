@@ -63,12 +63,7 @@ body {
 
 .main .link {
   /* background-color: rgb(131, 131, 145, 0.6); */
-  background: linear-gradient(
-    45deg,
-    rgb(0, 0, 0),
-    rgb(131, 131, 145, 0.6),
-    rgb(0, 0, 0)
-  );
+  background: rgb(131, 131, 145, 0.6);
   border-radius: 30px;
   width: 25%;
   height: 50%;
@@ -78,15 +73,11 @@ body {
   text-align: center;
   font-size: 2rem;
   cursor: pointer;
+  box-shadow: 5px 5px 100px rgb(0, 0, 0, 0.4), -5px -5px 100px rgb(0, 0, 0, 0.4);
 }
 
 .main .link:hover {
-  background: linear-gradient(
-    45deg,
-    rgb(0, 0, 0),
-    rgb(131, 131, 145),
-    rgb(0, 0, 0)
-  );
+  background: rgb(131, 131, 145, 0.9);
 }
 
 .main .link a {
