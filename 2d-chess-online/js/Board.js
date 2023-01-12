@@ -15,6 +15,46 @@ export default class Board {
     this.turn = COLOUR.WHITE;
     this.isInCheck = false;
     this.checkMate = false;
+    this.pov = COLOUR.WHITE;
+
+    // Connect to server and initialize whether we are black or white
+    this.socket = new WebSocket('ws://localhost:8999');
+    this.socket.onopen = () => {
+      console.log('[open] Connection established');
+      fetch('http://localhost:8999/new-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // body: JSON.stringify({
+
+        // }),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          this.gameCode = json.code;
+          this.socket.onmessage = (e) => {
+            const message = e.data;
+            console.log('Received:', message);
+            // this.flip();
+          };
+        });
+    };
+  }
+
+  flip() {
+    this.tiles.reverse().forEach((item, i) =>
+      item.reverse().forEach((itm, j) => {
+        if (itm !== undefined) {
+          itm.x = i;
+          itm.y = j;
+          if (itm.direction) {
+            itm.direction *= -1;
+          }
+        }
+      }),
+    );
+    this.pov = this.pov === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
   }
 
   createTiles() {
@@ -103,7 +143,13 @@ export default class Board {
       }
       textAlign(CENTER, CENTER);
       const w = SIZE / 8;
-      text(ABC[i], x + w / 2 - 10, y - w / 2 + w - 12);
+      let txt;
+      if (this.pov === COLOUR.WHITE) {
+        txt = ABC[i];
+      } else {
+        txt = ABC[7 - i];
+      }
+      text(txt, x + w / 2 - 10, y - w / 2 + w - 12);
       pop();
     }
     for (let i = 7; i >= 0; i--) {
@@ -119,7 +165,13 @@ export default class Board {
       }
       textAlign(CENTER, CENTER);
       const w = SIZE / 8;
-      text(8 - i, x - w / 2 + 10, y + w / 2 - w + 15);
+      let val;
+      if (this.pov === COLOUR.WHITE) {
+        val = 8 - i;
+      } else {
+        val = i + 1;
+      }
+      text(val, x - w / 2 + 10, y + w / 2 - w + 15);
       pop();
     }
 
@@ -204,6 +256,13 @@ export default class Board {
         this.checkMate = true;
         console.log('Checkmate');
       }
+    }
+
+    if (this.socket.readyState > 0) {
+      const abc = 'abcdefgh';
+      let alMove = '';
+      alMove += abc[from.x] + (from.y + 1) + abc[to.x] + (to.y + 1);
+      this.socket.send(`${this.gameCode} move ${alMove}`);
     }
   }
 

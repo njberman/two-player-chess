@@ -15,6 +15,23 @@ export default class Board {
     this.turn = COLOUR.WHITE;
     this.isInCheck = false;
     this.checkMate = false;
+
+    this.pov = COLOUR.WHITE;
+  }
+
+  flip() {
+    this.tiles.reverse().forEach((item, i) =>
+      item.reverse().forEach((itm, j) => {
+        if (itm !== undefined) {
+          itm.x = i;
+          itm.y = j;
+          if (itm.direction) {
+            itm.direction *= -1;
+          }
+        }
+      }),
+    );
+    this.pov = this.pov === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
   }
 
   createTiles() {
@@ -103,7 +120,13 @@ export default class Board {
       }
       textAlign(CENTER, CENTER);
       const w = SIZE / 8;
-      text(ABC[i], x + w / 2 - 10, y - w / 2 + w - 12);
+      let txt;
+      if (this.pov === COLOUR.WHITE) {
+        txt = ABC[i];
+      } else {
+        txt = ABC[7 - i];
+      }
+      text(txt, x + w / 2 - 10, y - w / 2 + w - 12);
       pop();
     }
     for (let i = 7; i >= 0; i--) {
@@ -119,7 +142,13 @@ export default class Board {
       }
       textAlign(CENTER, CENTER);
       const w = SIZE / 8;
-      text(8 - i, x - w / 2 + 10, y + w / 2 - w + 15);
+      let val;
+      if (this.pov === COLOUR.WHITE) {
+        val = 8 - i;
+      } else {
+        val = i + 1;
+      }
+      text(val, x - w / 2 + 10, y + w / 2 - w + 15);
       pop();
     }
 
@@ -205,6 +234,7 @@ export default class Board {
         console.log('Checkmate');
       }
     }
+    this.flip();
   }
 
   isOffBoard(x, y) {
