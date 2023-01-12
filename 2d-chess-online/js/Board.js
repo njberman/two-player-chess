@@ -9,22 +9,12 @@ import CheckFinder from './CheckFinder.js';
 import { convertToFen } from './convertToFen.js';
 
 export default class Board {
-  constructor(diff_level) {
+  constructor() {
     this.sizeOfSquare = SIZE / 8;
     this.tiles = this.createTiles();
     this.turn = COLOUR.WHITE;
     this.isInCheck = false;
     this.checkMate = false;
-
-    this.stockfish = new Worker('/2d-chess-ai/assets/stockfish.js');
-    this.stockfish.addEventListener('message', (e) => console.log(e.data));
-    this.stockfish.postMessage('uci');
-    this.stockfish.postMessage('ucinewgame');
-    this.stockfish.postMessage(
-      'setoption name Skill Level value 1' + diff_level,
-    );
-    this.depth = 5;
-    this.diff = 'easy';
   }
 
   createTiles() {
@@ -134,10 +124,8 @@ export default class Board {
     }
 
     this.displaySelected();
-
     if (this.checkMate && this.isInCheck) {
       push();
-      textAlign(CENTER, CENTER);
       textSize(80);
       noStroke();
       fill(0, 200);
@@ -145,7 +133,6 @@ export default class Board {
       pop();
     } else if (this.isInCheck) {
       push();
-      textAlign(CENTER, CENTER);
       textSize(80);
       noStroke();
       fill(0, 100);
@@ -203,80 +190,11 @@ export default class Board {
     }
   }
 
-  aiMove() {
-    console.log(this.checkMate);
-    if (this.turn === COLOUR.BLACK && !this.checkMate) {
-      if (this.diff === 'easy') {
-        // Random moves
-        const blackPieces = [];
-        for (let col of this.tiles) {
-          for (let piece of col) {
-            if (piece && piece.colour === COLOUR.BLACK) blackPieces.push(piece);
-          }
-        }
-        let randMove;
-        while (!this.checkMate) {
-          const randPiece =
-            blackPieces[Math.floor(Math.random() * blackPieces.length)];
-          const randMoves = randPiece.findLegalMoves(this.tiles);
-          const { x, y } = randPiece;
-          if (randMoves.length > 0) {
-            const { x: x2, y: y2 } =
-              randMoves[Math.floor(Math.random() * randMoves.length)];
-            randMove = { from: { x, y }, to: { x: x2, y: y2 } };
-            break;
-          }
-        }
-        this.move(randMove.from, randMove.to);
-      } else if (this.diff === 'diff') {
-        // Stockfish
-        const board = this;
-        this.stockfish.postMessage('position fen ' + convertToFen(this));
-        this.stockfish.postMessage(`go depth ${this.depth}`);
-        this.stockfish.addEventListener('message', function (e) {
-          if (e.data.includes('bestmove')) {
-            console.log(e.data);
-            const blackBestMovePos = e.data.split(' ')[1];
-            board.blackBestMove = {
-              from: { x: undefined, y: undefined },
-              to: { x: undefined, y: undefined },
-            };
-            // Convert pos to x and y
-            board.blackBestMove.from.x = ABC.indexOf(blackBestMovePos[0]);
-            board.blackBestMove.from.y = 8 - blackBestMovePos[1];
-            board.blackBestMove.to.x = ABC.indexOf(blackBestMovePos[2]);
-            board.blackBestMove.to.y = 8 - blackBestMovePos[3];
-            if (
-              board.tiles[board.blackBestMove.from.x][
-                board.blackBestMove.from.y
-              ]
-            ) {
-              board.move(board.blackBestMove.from, board.blackBestMove.to);
-            }
-            return;
-          }
-        });
-      }
-    }
-  }
-
   move(from, to) {
     console.log(from, to);
     this.turn = this.turn === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
     this.tiles[from.x][from.y].userMove(to.x, to.y, this.tiles);
     this.selected = undefined;
-
-    this.isInCheck = CheckFinder.isCurrentPlayerInCheck(this.tiles, this.turn);
-
-    if (this.isInCheck) {
-      let moves = CheckFinder.findMovesForCheckedPlayer(this.tiles, this.turn);
-      if (moves.length === 0) {
-        this.checkMate = true;
-        console.log('Checkmate');
-      }
-    }
-
-    this.aiMove();
 
     this.isInCheck = CheckFinder.isCurrentPlayerInCheck(this.tiles, this.turn);
 

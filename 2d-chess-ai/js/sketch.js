@@ -9,15 +9,16 @@ const difficultyInput = document.getElementById('difficulty-options');
 startButton.addEventListener('click', () => {
   startButton.innerText = 'Restart Game';
   const diff = difficultyInput.value;
+  const diff_level = 20;
 
-  window.setup();
+  window.setup(diff_level);
   board.diff = diff;
   loop();
 });
 
-window.setup = () => {
+window.setup = (diff_level) => {
   createCanvas(SIZE, SIZE);
-  board = new Board();
+  board = new Board(diff_level);
   noLoop();
 };
 
