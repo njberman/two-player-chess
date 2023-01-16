@@ -18,11 +18,15 @@ export default class Board {
     this.pov = COLOUR.WHITE;
 
     // Connect to server and initialize whether we are black or white
-    this.socket = new WebSocket(`ws://${APIURL}`);
+    let url;
+    if (APIURL.includes('localhost')) {
+      this.socket = new WebSocket(`ws://${APIURL}`);
+    } else {
+      this.socket = new WebSocket(`wss://${APIURL}`);
+    }
     this.socket.onopen = () => {
       console.log('[open] Connection established');
       console.log(code);
-      let url;
       if (APIURL.includes('localhost')) {
         url = `http://${APIURL}/new-game`;
       } else {
