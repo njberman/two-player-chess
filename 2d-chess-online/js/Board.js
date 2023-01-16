@@ -1,5 +1,5 @@
 import Bishop from './Bishop.js';
-import { COLOUR, SIZE, ABC } from './constants.js';
+import { COLOUR, SIZE, ABC, APIURL } from './constants.js';
 import Pawn from './Pawn.js';
 import Rook from './Rook.js';
 import Knight from './Knight.js';
@@ -9,7 +9,7 @@ import CheckFinder from './CheckFinder.js';
 import { convertToFen } from './convertToFen.js';
 
 export default class Board {
-  constructor() {
+  constructor(code) {
     this.sizeOfSquare = SIZE / 8;
     this.tiles = this.createTiles();
     this.turn = COLOUR.WHITE;
@@ -18,25 +18,49 @@ export default class Board {
     this.pov = COLOUR.WHITE;
 
     // Connect to server and initialize whether we are black or white
-    this.socket = new WebSocket('ws://localhost:8999');
+    this.socket = new WebSocket(`ws://${APIURL}`);
     this.socket.onopen = () => {
       console.log('[open] Connection established');
-      fetch('http://localhost:8999/new-game', {
+      console.log(code);
+      let url;
+      if (APIURL.includes('localhost')) {
+        url = `http://${APIURL}/new-game`;
+      } else {
+        url = `https://${APIURL}/new-game`;
+      }
+      fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        // body: JSON.stringify({
-
-        // }),
+        body: code
+          ? JSON.stringify({
+              code,
+            })
+          : undefined,
       })
         .then((res) => res.json())
         .then((json) => {
+          console.log(json);
           this.gameCode = json.code;
+          if (json.message.includes('Game already exists')) {
+            this.flip();
+          }
+          document.getElementById(
+            'game-code-show',
+          ).innerText = `Code: ${this.gameCode}`;
           this.socket.onmessage = (e) => {
             const message = e.data;
             console.log('Received:', message);
             // this.flip();
+            if (
+              message.includes('move') &&
+              message.split(' ')[0] === this.gameCode &&
+              message.split(' ')[3] !== this.pov
+            ) {
+              const { from, to } = this.moveToIdx(message.split(' ')[2]);
+              this.move(from, to);
+            }
           };
         });
     };
@@ -259,11 +283,44 @@ export default class Board {
     }
 
     if (this.socket.readyState > 0) {
-      const abc = 'abcdefgh';
-      let alMove = '';
-      alMove += abc[from.x] + (from.y + 1) + abc[to.x] + (to.y + 1);
-      this.socket.send(`${this.gameCode} move ${alMove}`);
+      if (this.turn !== this.pov) {
+        this.socket.send(
+          `${this.gameCode} move ${this.idxToMove(from, to)} ${this.pov}`,
+        );
+      }
     }
+  }
+
+  moveToIdx(move) {
+    const from = { x: 0, y: 0 };
+    const to = { x: 0, y: 0 };
+    const split = move.split('');
+    if (this.pov === COLOUR.WHITE) {
+      const abc = 'abcdefgh';
+      from.x = abc.indexOf(split[0]);
+      from.y = 8 - Number(split[1]);
+      to.x = abc.indexOf(split[2]);
+      to.y = 8 - Number(split[3]);
+    } else {
+      const abc = 'abcdefgh'.split('').reverse().join('');
+      from.x = abc.indexOf(split[0]);
+      from.y = Number(split[1]) - 1;
+      to.x = abc.indexOf(split[2]);
+      to.y = Number(split[3]) - 1;
+    }
+    console.log(from, to, 'moveToIdx');
+    return { from, to };
+  }
+
+  idxToMove(from, to) {
+    const abc = 'abcdefgh';
+    let alMove = '';
+    if (this.pov === COLOUR.WHITE) {
+      alMove += abc[from.x] + (8 - from.y) + abc[to.x] + (8 - to.y);
+    } else {
+      alMove += abc[7 - from.x] + (from.y + 1) + abc[7 - to.x] + (to.y + 1);
+    }
+    return alMove;
   }
 
   isOffBoard(x, y) {

@@ -2,27 +2,35 @@ import Board from './Board.js';
 import { SIZE } from './constants.js';
 import { convertToFen } from './convertToFen.js';
 let board;
-// let socket = new WebSocket('ws://localhost:3030');
-// socket.onopen = (e) => {
-//   console.log('[open] Connection Established');
-//   console.log('Sending to server');
-//   socket.send('My name is Nato');
-// };
+const gameCodeForm = document.getElementById('game-code-form');
+const gameCodeInput = document.getElementById('game-code');
+let started = false;
 
-window.setup = () => {
+gameCodeForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  board = new Board(gameCodeInput.value);
+  started = true;
+  gameCodeInput.value = '';
+});
+
+window.setup = (code, btn) => {
   createCanvas(SIZE, SIZE);
-  board = new Board();
+  board = new Board(code);
 };
 
 window.draw = () => {
   background(220);
-  board.draw();
+  if (started) {
+    board.draw();
+  } else {
+    document.getElementById('game-code-show').innerText = '';
+  }
 };
 
 window.onclick = function (evt) {
-  const x = evt.clientX;
-  const y = evt.clientY;
-  board.userClick(x, y);
-  navigator.clipboard.writeText(convertToFen(board));
-  // console.log(convertToFen(board));
+  if (started && board.turn === board.pov) {
+    const x = mouseX;
+    const y = mouseY;
+    board.userClick(x, y);
+  }
 };

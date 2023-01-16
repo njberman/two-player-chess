@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      width="device-width,"
+      initial-scale="1.0,"
+      maximum-scale="1.0,"
+      user-scalable="0"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
   </head>
   <body>
-    <div>
-      <script>window.p5 = p5;</script>
-      <script src="js/sketch.js" type="module" defer></script>
+    <div class="main">
+      <div>
+        <script>
+          window.p5 = p5;
+        </script>
+        <script src="js/sketch.js" type="module" defer></script>
+      </div>
+      <main></main>
+
+      <form id="game-code-form">
+        <div>Enter game code below (leave empty for random code):</div>
+        <div>
+          Once game created, enter code on other device and start playing!
+        </div>
+        <div id="game-code-show"></div>
+        <div class="inputs">
+          <input type="text" id="game-code" />
+          <button type="submit">Start</button>
+        </div>
+      </form>
     </div>
-    
   </body>
 </html>
