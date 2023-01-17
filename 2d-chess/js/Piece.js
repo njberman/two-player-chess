@@ -1,6 +1,7 @@
 import CheckFinder from './CheckFinder.js';
 import { SIZE } from './constants.js';
 import images from './preloadImages.js';
+import imagePaths from './imagePaths.js';
 export default class Piece {
   constructor(x, y, colour, sprite) {
     this.x = x;
@@ -13,6 +14,15 @@ export default class Piece {
 
   userMove(toX, toY, tiles) {
     this.hasMoved = true;
+
+    const prev = tiles[toX][toY];
+    if (prev !== undefined) {
+      const img = document.createElement('img');
+      img.src = imagePaths[prev.sprite];
+      img.alt = prev.sprite;
+      document.getElementsByClassName('taken')[0].appendChild(img);
+    }
+
     this.move(toX, toY, tiles);
   }
 

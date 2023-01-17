@@ -51,3 +51,16 @@ select {
 select:hover {
   background-color: rgb(127, 127, 127, 0.9);
 }
+
+.taken {
+  height: 80%;
+  width: 30%;
+  background-color: rgb(0, 0, 0, 0.2);
+  border-radius: 20px;
+  margin: 1.2rem;
+  text-align: center;
+}
+
+.taken img {
+  width: 15%;
+}

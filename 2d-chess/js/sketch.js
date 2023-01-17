@@ -14,8 +14,8 @@ window.draw = () => {
 };
 
 window.onclick = function (evt) {
-  const x = evt.clientX;
-  const y = evt.clientY;
+  const x = mouseX;
+  const y = mouseY;
   board.userClick(x, y);
   navigator.clipboard.writeText(convertToFen(board));
   // console.log(convertToFen(board));

@@ -16,15 +16,19 @@ export default class Board {
     this.isInCheck = false;
     this.checkMate = false;
 
-    this.stockfish = new Worker('/2d-chess-ai/assets/stockfish.js');
-    this.stockfish.addEventListener('message', (e) => console.log(e.data));
+    this.stockfish = new Worker('/2d-chess-ai/assets/stockfish2.js');
+    this.stockfish.postMessage('setoption name Skill Level value 20');
     this.stockfish.postMessage('uci');
     this.stockfish.postMessage('ucinewgame');
-    this.stockfish.postMessage(
-      'setoption name Skill Level value 1' + diff_level,
-    );
-    this.depth = 5;
+    this.stockfish.addEventListener('message', (e) => console.log(e.data));
+    this.depth = 10;
     this.diff = 'easy';
+
+    this.lastMove = {
+      from: { x: undefined, y: undefined },
+      to: { x: undefined, y: undefined },
+    };
+    this.started = false;
   }
 
   createTiles() {
@@ -94,6 +98,18 @@ export default class Board {
           fill(234, 232, 210);
           rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
           pop();
+        }
+        if (this.started) {
+          if (
+            (this.lastMove.from.x === i && this.lastMove.from.y === j) ||
+            (this.lastMove.to.x === i && this.lastMove.to.y === j)
+          ) {
+            push();
+            noStroke();
+            fill(255, 254, 134, 100);
+            rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
+            pop();
+          }
         }
         if (currentTile) {
           currentTile.draw(x, y);
@@ -275,6 +291,9 @@ export default class Board {
         console.log('Checkmate');
       }
     }
+    this.lastMove.from = from;
+    this.lastMove.to = to;
+    this.started = true;
 
     this.aiMove();
 

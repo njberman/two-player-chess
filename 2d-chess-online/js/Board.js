@@ -19,6 +19,12 @@ export default class Board {
     this.checkMate = false;
     this.pov = COLOUR.WHITE;
 
+    this.lastMove = {
+      from: { x: undefined, y: undefined },
+      to: { x: undefined, y: undefined },
+    };
+    this.started = false;
+
     // Connect to server and initialize whether we are black or white
     let url;
     if (APIURL.includes('localhost')) {
@@ -80,6 +86,14 @@ export default class Board {
       }),
     );
     this.pov = this.pov === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
+    if (this.started) {
+      console.log(this.lastMove);
+      this.lastMove.from.x = 7 - this.lastMove.from.x;
+      this.lastMove.from.y = 7 - this.lastMove.from.y;
+      this.lastMove.to.x = 7 - this.lastMove.to.x;
+      this.lastMove.to.y = 7 - this.lastMove.to.y;
+      console.log(this.lastMove);
+    }
   }
 
   createTiles() {
@@ -149,6 +163,18 @@ export default class Board {
           fill(234, 232, 210);
           rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
           pop();
+        }
+        if (this.started) {
+          if (
+            (this.lastMove.from.x === i && this.lastMove.from.y === j) ||
+            (this.lastMove.to.x === i && this.lastMove.to.y === j)
+          ) {
+            push();
+            noStroke();
+            fill(255, 254, 134, 100);
+            rect(x, y, this.sizeOfSquare, this.sizeOfSquare);
+            pop();
+          }
         }
         if (currentTile) {
           currentTile.draw(x, y);
@@ -274,6 +300,9 @@ export default class Board {
     this.selected = undefined;
 
     this.isInCheck = CheckFinder.isCurrentPlayerInCheck(this.tiles, this.turn);
+    this.lastMove.from = from;
+    this.lastMove.to = to;
+    this.started = true;
 
     if (this.isInCheck) {
       let moves = CheckFinder.findMovesForCheckedPlayer(this.tiles, this.turn);

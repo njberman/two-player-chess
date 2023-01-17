@@ -1,11 +1,40 @@
+* {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 html,
 body {
   /* margin: 20px; */
   padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 canvas {
   /*     padding: 0;
     margin: auto; */
   display: block;
   /* width: 800px; */
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.taken {
+  height: 80%;
+  width: 30%;
+  background-color: rgb(0, 0, 0, 0.2);
+  border-radius: 20px;
+  margin: 1.2rem;
+  text-align: center;
+}
+
+.taken img {
+  width: 15%;
 }

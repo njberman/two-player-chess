@@ -13,6 +13,7 @@ const images = {
   '♛': undefined,
   '♚': undefined,
 };
+
 window.preload = () => {
   images['♙'] = loadImage('/2d-chess/pieces_images/pawn_w.png');
   images['♟'] = loadImage('/2d-chess/pieces_images/pawn_b.png');
