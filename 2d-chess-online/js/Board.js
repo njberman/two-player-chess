@@ -8,6 +8,8 @@ import Queen from './Queen.js';
 import CheckFinder from './CheckFinder.js';
 import { convertToFen } from './convertToFen.js';
 
+const info = document.getElementById('info');
+
 export default class Board {
   constructor(code) {
     this.sizeOfSquare = SIZE / 8;
@@ -25,12 +27,12 @@ export default class Board {
       this.socket = new WebSocket(`wss://${APIURL}`);
     }
     this.socket.onerror = (e) => {
-      document.getElementById('info').innerText = `${e.type}`;
+      info.innerText = JSON.stringify(e);
     };
     this.socket.onopen = () => {
       console.log('[open] Connection established');
       console.log(code);
-      document.getElementById('info').innerText = 'Connected to WebSocket!';
+      info.innerText = 'Connected to WebSocket!';
       if (APIURL.includes('localhost')) {
         url = `http://${APIURL}/new-game`;
       } else {
@@ -50,6 +52,7 @@ export default class Board {
         .then((res) => res.json())
         .then((json) => {
           console.log(json);
+          info.innerText = JSON.stringify(json);
           this.gameCode = json.code;
           if (json.message.includes('Game already exists')) {
             this.flip();
@@ -60,6 +63,7 @@ export default class Board {
           this.socket.onmessage = (e) => {
             const message = e.data;
             console.log('Received:', message);
+            info.innerText = message;
             // this.flip();
             if (
               message.includes('move') &&
