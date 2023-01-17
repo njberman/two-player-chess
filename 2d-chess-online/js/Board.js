@@ -45,7 +45,6 @@ export default class Board {
         if (message[0] === '{') {
           const json = JSON.parse(message);
           console.log(json);
-          info.innerText = JSON.stringify(json);
           this.gameCode = json.code;
           if (json.message.includes('Game already exists')) {
             this.flip();
@@ -54,7 +53,6 @@ export default class Board {
             'game-code-show',
           ).innerText = `Code: ${this.gameCode}`;
         } else {
-          info.innerText = message;
           // this.flip();
           if (
             message.includes('move') &&
