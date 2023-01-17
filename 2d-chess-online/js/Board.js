@@ -38,32 +38,37 @@ export default class Board {
       } else {
         url = `https://${APIURL}/new-game`;
       }
-      axios.post(url, code ? { code } : undefined).then((res) => {
-        const json = res.data;
-        console.log(json);
-        info.innerText = JSON.stringify(json);
-        this.gameCode = json.code;
-        if (json.message.includes('Game already exists')) {
-          this.flip();
-        }
-        document.getElementById(
-          'game-code-show',
-        ).innerText = `Code: ${this.gameCode}`;
-        this.socket.onmessage = (e) => {
-          const message = e.data;
-          console.log('Received:', message);
-          info.innerText = message;
-          // this.flip();
-          if (
-            message.includes('move') &&
-            message.split(' ')[0] === this.gameCode &&
-            message.split(' ')[3] !== this.pov
-          ) {
-            const { from, to } = this.moveToIdx(message.split(' ')[2]);
-            this.move(from, to);
+      axios
+        .post(url, code ? { code } : undefined)
+        .then((res) => {
+          const json = res.data;
+          console.log(json);
+          info.innerText = JSON.stringify(json);
+          this.gameCode = json.code;
+          if (json.message.includes('Game already exists')) {
+            this.flip();
           }
-        };
-      });
+          document.getElementById(
+            'game-code-show',
+          ).innerText = `Code: ${this.gameCode}`;
+          this.socket.onmessage = (e) => {
+            const message = e.data;
+            console.log('Received:', message);
+            info.innerText = message;
+            // this.flip();
+            if (
+              message.includes('move') &&
+              message.split(' ')[0] === this.gameCode &&
+              message.split(' ')[3] !== this.pov
+            ) {
+              const { from, to } = this.moveToIdx(message.split(' ')[2]);
+              this.move(from, to);
+            }
+          };
+        })
+        .catch((err) => {
+          info.innerText = JSON.stringify(err);
+        });
     };
   }
 
