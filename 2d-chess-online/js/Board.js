@@ -24,9 +24,13 @@ export default class Board {
     } else {
       this.socket = new WebSocket(`wss://${APIURL}`);
     }
+    this.socket.onerror = (e) => {
+      document.getElementById('info').innerText = `${e.type}`;
+    };
     this.socket.onopen = () => {
       console.log('[open] Connection established');
       console.log(code);
+      document.getElementById('info').innerText = 'Connected to WebSocket!';
       if (APIURL.includes('localhost')) {
         url = `http://${APIURL}/new-game`;
       } else {

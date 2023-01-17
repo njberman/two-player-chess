@@ -78,3 +78,8 @@ button:hover {
   font-weight: bold;
   font-size: larger;
 }
+
+#info {
+  font-size: smaller;
+  font-weight: bold;
+}
