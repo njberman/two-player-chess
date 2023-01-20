@@ -17,6 +17,7 @@ export default class Board {
     this.checkMate = false;
 
     this.pov = COLOUR.WHITE;
+    console.table(this.tiles);
 
     this.lastMove = {
       from: { x: undefined, y: undefined },

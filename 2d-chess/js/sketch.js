@@ -6,6 +6,8 @@ let board;
 window.setup = () => {
   createCanvas(SIZE, SIZE);
   board = new Board();
+  document.getElementsByClassName('taken')[0].innerHTML =
+    '<h1>Taken Pieces</h1>';
 };
 
 window.draw = () => {

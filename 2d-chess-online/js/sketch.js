@@ -16,6 +16,8 @@ gameCodeForm.addEventListener('submit', (e) => {
 window.setup = (code, btn) => {
   createCanvas(SIZE, SIZE);
   board = new Board(code);
+  document.getElementsByClassName('taken')[0].innerHTML =
+    '<h1>Taken Pieces</h1>';
 };
 
 window.draw = () => {

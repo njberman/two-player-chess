@@ -6,7 +6,8 @@ import Knight from './Knight.js';
 import King from './King.js';
 import Queen from './Queen.js';
 import CheckFinder from './CheckFinder.js';
-import { convertToFen } from './convertToFen.js';
+import { convertToFen, convertToTiles } from './convertToFen.js';
+import imagePaths from './imagePaths.js';
 
 const info = document.getElementById('info');
 
@@ -18,6 +19,12 @@ export default class Board {
     this.isInCheck = false;
     this.checkMate = false;
     this.pov = COLOUR.WHITE;
+
+    this.spectating = false;
+
+    this.tiles = convertToTiles(
+      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
+    ).tiles;
 
     this.lastMove = {
       from: { x: undefined, y: undefined },
@@ -51,22 +58,49 @@ export default class Board {
         if (message[0] === '{') {
           const json = JSON.parse(message);
           console.log(json);
-          this.gameCode = json.code;
-          if (json.message.includes('Game already exists')) {
-            this.flip();
+          if (json.taken) {
+            const takenEl = document.getElementsByClassName('taken')[0];
+            takenEl.innerHTML = '<h1>Taken Pieces</h1>';
+            for (let sprite of json.taken) {
+              const img = document.createElement('img');
+              img.src = imagePaths[sprite];
+              img.alt = sprite;
+              takenEl.appendChild(img);
+            }
+          } else if (json.message) {
+            this.gameCode = json.code;
+            this.tiles = convertToTiles(json.fen).tiles;
+            this.turn = convertToTiles(json.fen).turn;
+            document.getElementById(
+              'game-code-show',
+            ).innerText = `Code: ${this.gameCode}`;
+            if (json.toConnect && json.toConnect === COLOUR.BLACK) {
+              this.flip();
+              this.pov = COLOUR.BLACK;
+            } else if (json.toConnect && json.toConnect === 'spec') {
+              this.pov = COLOUR.WHITE;
+              this.spectating = true;
+              document.getElementById('game-code-show').innerText +=
+                ' (spectating)';
+            }
           }
-          document.getElementById(
-            'game-code-show',
-          ).innerText = `Code: ${this.gameCode}`;
         } else {
-          // this.flip();
           if (
             message.includes('move') &&
-            message.split(' ')[0] === this.gameCode &&
-            message.split(' ')[3] !== this.pov
+            message.split(' ')[0] === this.gameCode
           ) {
-            const { from, to } = this.moveToIdx(message.split(' ')[2]);
-            this.move(from, to);
+            const fen = message.split('"')[1];
+            this.tiles = convertToTiles(fen).tiles;
+            if (
+              message.split(' ')[message.split(' ').length - 2] !== this.pov
+            ) {
+              this.flip();
+            }
+            this.turn = convertToTiles(fen).turn;
+            this.lastMove = this.moveToIdx(
+              message.split(' ')[message.split(' ').length - 1],
+            );
+            this.socket.send(`taken ${this.gameCode}`);
           }
         }
       };
@@ -80,52 +114,58 @@ export default class Board {
           itm.x = i;
           itm.y = j;
           if (itm.direction) {
-            itm.direction *= -1;
+            if (
+              (this.pov === COLOUR.BLACK && itm.colour === COLOUR.BLACK) ||
+              (this.pov === COLOUR.WHITE && itm.colour === COLOUR.WHITE)
+            ) {
+              itm.direction = -1;
+            } else {
+              itm.direction = 1;
+            }
           }
         }
       }),
     );
-    this.pov = this.pov === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
     if (this.started) {
-      console.log(this.lastMove);
       this.lastMove.from.x = 7 - this.lastMove.from.x;
       this.lastMove.from.y = 7 - this.lastMove.from.y;
       this.lastMove.to.x = 7 - this.lastMove.to.x;
       this.lastMove.to.y = 7 - this.lastMove.to.y;
-      console.log(this.lastMove);
     }
   }
 
   createTiles() {
-    let tiles = this.createEmptyBoard();
+    let tiles = convertToTiles(
+      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w',
+    ).tiles;
 
-    for (let i = 0; i < 8; i++) {
-      tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, '♟');
-      tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, '♙');
-      // tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, images.black.pawn);
-      // tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, images.white.pawn);
-    }
+    // for (let i = 0; i < 8; i++) {
+    //   tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, '♟');
+    //   tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, '♙');
+    //   // tiles[i][1] = new Pawn(i, 1, COLOUR.BLACK, images.black.pawn);
+    //   // tiles[i][6] = new Pawn(i, 6, COLOUR.WHITE, images.white.pawn);
+    // }
 
-    tiles[0][0] = new Rook(0, 0, COLOUR.BLACK, '♜');
-    tiles[7][0] = new Rook(7, 0, COLOUR.BLACK, '♜');
-    tiles[0][7] = new Rook(0, 7, COLOUR.WHITE, '♖');
-    tiles[7][7] = new Rook(7, 7, COLOUR.WHITE, '♖');
+    // tiles[0][0] = new Rook(0, 0, COLOUR.BLACK, '♜');
+    // tiles[7][0] = new Rook(7, 0, COLOUR.BLACK, '♜');
+    // tiles[0][7] = new Rook(0, 7, COLOUR.WHITE, '♖');
+    // tiles[7][7] = new Rook(7, 7, COLOUR.WHITE, '♖');
 
-    tiles[2][0] = new Bishop(2, 0, COLOUR.BLACK, '♝');
-    tiles[5][0] = new Bishop(5, 0, COLOUR.BLACK, '♝');
-    tiles[2][7] = new Bishop(2, 7, COLOUR.WHITE, '♗');
-    tiles[5][7] = new Bishop(5, 7, COLOUR.WHITE, '♗');
+    // tiles[2][0] = new Bishop(2, 0, COLOUR.BLACK, '♝');
+    // tiles[5][0] = new Bishop(5, 0, COLOUR.BLACK, '♝');
+    // tiles[2][7] = new Bishop(2, 7, COLOUR.WHITE, '♗');
+    // tiles[5][7] = new Bishop(5, 7, COLOUR.WHITE, '♗');
 
-    tiles[1][0] = new Knight(1, 0, COLOUR.BLACK, '♞');
-    tiles[6][0] = new Knight(6, 0, COLOUR.BLACK, '♞');
-    tiles[1][7] = new Knight(1, 7, COLOUR.WHITE, '♘');
-    tiles[6][7] = new Knight(6, 7, COLOUR.WHITE, '♘');
+    // tiles[1][0] = new Knight(1, 0, COLOUR.BLACK, '♞');
+    // tiles[6][0] = new Knight(6, 0, COLOUR.BLACK, '♞');
+    // tiles[1][7] = new Knight(1, 7, COLOUR.WHITE, '♘');
+    // tiles[6][7] = new Knight(6, 7, COLOUR.WHITE, '♘');
 
-    tiles[4][0] = new King(4, 0, COLOUR.BLACK, '♚');
-    tiles[4][7] = new King(4, 7, COLOUR.WHITE, '♔');
+    // tiles[4][0] = new King(4, 0, COLOUR.BLACK, '♚');
+    // tiles[4][7] = new King(4, 7, COLOUR.WHITE, '♔');
 
-    tiles[3][0] = new Queen(3, 0, COLOUR.BLACK, '♛');
-    tiles[3][7] = new Queen(3, 7, COLOUR.WHITE, '♕');
+    // tiles[3][0] = new Queen(3, 0, COLOUR.BLACK, '♛');
+    // tiles[3][7] = new Queen(3, 7, COLOUR.WHITE, '♕');
 
     return tiles;
   }
@@ -272,7 +312,9 @@ export default class Board {
   userClick(clientX, clientY) {
     const x = Math.floor(clientX / 100);
     const y = Math.floor(clientY / 100);
-    this.select(x, y);
+    if (!this.spectating) {
+      this.select(x, y);
+    }
   }
 
   select(x, y) {
@@ -296,7 +338,7 @@ export default class Board {
   move(from, to) {
     console.log(from, to);
     this.turn = this.turn === COLOUR.WHITE ? COLOUR.BLACK : COLOUR.WHITE;
-    this.tiles[from.x][from.y].userMove(to.x, to.y, this.tiles);
+    this.tiles[from.x][from.y].userMove(to.x, to.y, this.tiles, this);
     this.selected = undefined;
 
     this.isInCheck = CheckFinder.isCurrentPlayerInCheck(this.tiles, this.turn);
@@ -315,7 +357,9 @@ export default class Board {
     if (this.socket.readyState > 0) {
       if (this.turn !== this.pov) {
         this.socket.send(
-          `${this.gameCode} move ${this.idxToMove(from, to)} ${this.pov}`,
+          `${this.gameCode} move "${convertToFen(this)}" ${
+            this.pov
+          } ${this.idxToMove(this.lastMove.from, this.lastMove.to)}`,
         );
       }
     }

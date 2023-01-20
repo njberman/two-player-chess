@@ -12,15 +12,14 @@ export default class Piece {
     this.w = SIZE / 8;
   }
 
-  userMove(toX, toY, tiles) {
+  userMove(toX, toY, tiles, board) {
     this.hasMoved = true;
 
     const prev = tiles[toX][toY];
     if (prev !== undefined) {
-      const img = document.createElement('img');
-      img.src = imagePaths[prev.sprite];
-      img.alt = prev.sprite;
-      document.getElementsByClassName('taken')[0].appendChild(img);
+      if (board.socket.readyState > 0) {
+        board.socket.send(`take ${board.gameCode} ${prev.sprite}`);
+      }
     }
     this.move(toX, toY, tiles);
   }

@@ -18,6 +18,8 @@ startButton.addEventListener('click', () => {
 
 window.setup = (diff_level) => {
   createCanvas(SIZE, SIZE);
+  document.getElementsByClassName('taken')[0].innerHTML =
+    '<h1>Taken Pieces</h1>';
   board = new Board(diff_level);
   noLoop();
 };
