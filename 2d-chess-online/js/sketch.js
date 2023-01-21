@@ -1,5 +1,5 @@
 import Board from './Board.js';
-import { SIZE } from './constants.js';
+import { BASE_HTML, SIZE } from './constants.js';
 import { convertToFen } from './convertToFen.js';
 let board;
 const gameCodeForm = document.getElementById('game-code-form');
@@ -16,8 +16,7 @@ gameCodeForm.addEventListener('submit', (e) => {
 window.setup = (code, btn) => {
   createCanvas(SIZE, SIZE);
   board = new Board(code);
-  document.getElementsByClassName('taken')[0].innerHTML =
-    '<h1>Taken Pieces</h1>';
+  document.getElementsByClassName('taken')[0].innerHTML = BASE_HTML;
 };
 
 window.draw = () => {
@@ -35,4 +34,9 @@ window.onclick = function (evt) {
     const y = mouseY;
     board.userClick(x, y);
   }
+};
+
+window.onbeforeunload = () => {
+  board.socket.onclose = () => {};
+  board.socket.close();
 };

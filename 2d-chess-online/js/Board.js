@@ -1,5 +1,5 @@
 import Bishop from './Bishop.js';
-import { COLOUR, SIZE, ABC, APIURL } from './constants.js';
+import { COLOUR, SIZE, ABC, APIURL, BASE_HTML } from './constants.js';
 import Pawn from './Pawn.js';
 import Rook from './Rook.js';
 import Knight from './Knight.js';
@@ -31,6 +31,9 @@ export default class Board {
       to: { x: undefined, y: undefined },
     };
     this.started = false;
+    const takenEl = document.getElementsByClassName('taken')[0];
+
+    takenEl.innerHTML = BASE_HTML;
 
     // Connect to server and initialize whether we are black or white
     let url;
@@ -59,13 +62,16 @@ export default class Board {
           const json = JSON.parse(message);
           console.log(json);
           if (json.taken) {
-            const takenEl = document.getElementsByClassName('taken')[0];
-            takenEl.innerHTML = '<h1>Taken Pieces</h1>';
+            takenEl.innerHTML = BASE_HTML;
             for (let sprite of json.taken) {
               const img = document.createElement('img');
               img.src = imagePaths[sprite];
               img.alt = sprite;
-              takenEl.appendChild(img);
+              if (img.src.includes('_w')) {
+                document.getElementById('white').appendChild(img);
+              } else {
+                document.getElementById('black').appendChild(img);
+              }
             }
           } else if (json.message) {
             this.gameCode = json.code;
@@ -101,6 +107,10 @@ export default class Board {
               message.split(' ')[message.split(' ').length - 1],
             );
             this.socket.send(`taken ${this.gameCode}`);
+            this.isInCheck = CheckFinder.isCurrentPlayerInCheck(
+              this.tiles,
+              this.turn,
+            );
           }
         }
       };
