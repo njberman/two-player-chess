@@ -20,7 +20,12 @@ export default class Piece {
       const img = document.createElement('img');
       img.src = imagePaths[prev.sprite];
       img.alt = prev.sprite;
-      document.getElementsByClassName('taken')[0].appendChild(img);
+      img.setAttribute('class', 'w-12 h-12');
+      if (img.src.includes('_w')) {
+        document.getElementById('white').appendChild(img);
+      } else {
+        document.getElementById('black').appendChild(img);
+      }
     }
     this.move(toX, toY, tiles);
   }

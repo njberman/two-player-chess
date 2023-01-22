@@ -1,31 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night" class="h-screen">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chess</title>
-    <link rel="stylesheet" href="style.css" />
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.47.0/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <div class="flex">
-      <div class="main">
-        <div class="link">
-          <a href="2d-chess/index.html" target="_blank">Chess</a>
-        </div>
-        <div class="link">
-          <a href="2d-chess-ai/index.html" target="_blank">Chess With AI</a>
-        </div>
-        <div class="link">
-          <a href="2d-chess-online/index.html" target="_blank">Chess Online</a>
+  <body class="h-full flex flex-col">
+    <!-- <div class="flex"> -->
+    <div
+      class="h-full carousel carousel-center rounded-box place-content-center grid grid-cols-3 content-center place-items-center"
+    >
+      <div class="card w-10/12 bg-base-100 shadow-2xl carousel-item m-8">
+        <figure>
+          <img src="/assets/chess.png" alt="Shoes" />
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Chess</h2>
+          <p>Chess using the same computer</p>
+          <div class="card-actions justify-end">
+            <button class="btn glass my-link" data-href="2d-chess">
+              Play Now
+            </button>
+          </div>
         </div>
       </div>
-      <div class="cpt">
-        Games made by Copyright (c) 2020 Luke and juliangarnier and
-        OCEANOFANYTHING
+      <div class="card w-10/12 bg-base-100 shadow-2xl carousel-item m-8">
+        <figure>
+          <img src="/assets/chess-ai.png" alt="Shoes" />
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">Chess With AI</h2>
+          <p>Chess playing against AI</p>
+          <div class="card-actions justify-end">
+            <button class="btn glass my-link" data-href="2d-chess-ai">
+              Play Now
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card w-10/12 bg-base-100 shadow-2xl carousel-item m-8">
+        <figure>
+          <img src="/assets/chess-online.png" alt="Shoes" />
+        </figure>
+        <div class="card-body">
+          <h2 class="card-title">
+            Chess Online
+            <div class="badge badge-secondary">NEW</div>
+          </h2>
+          <p>Chess playing online against others</p>
+          <div class="card-actions justify-end">
+            <button class="btn glass my-link" data-href="2d-chess-online">
+              Play Now
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- <div class="cpt">Copyright (c) 2020 LukeGarrigan and njberman</div> -->
+    <!-- </div> -->
 
+    <footer class="footer footer-center p-4 bg-base-300 text-base-content">
+      <div>
+        <p>
+          Copyright © 2023 -
+          <a
+            href="https://github.com/LukeGarrigan"
+            class="link link-hover"
+            target="_blank"
+            >LukeGarrigan</a
+          >
+          and
+          <a
+            href="https://njberman.github.io"
+            class="link link-hover"
+            target="_blank"
+            >njberman</a
+          >
+        </p>
+      </div>
+    </footer>
     <script src="script.js"></script>
   </body>
 </html>

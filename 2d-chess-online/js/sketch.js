@@ -1,10 +1,11 @@
 import Board from './Board.js';
-import { BASE_HTML, SIZE } from './constants.js';
+import { SIZE } from './constants.js';
 import { convertToFen } from './convertToFen.js';
 let board;
 const gameCodeForm = document.getElementById('game-code-form');
 const gameCodeInput = document.getElementById('game-code');
 let started = false;
+const BASE_HTML = document.getElementById('main').children[0].innerHTML;
 
 gameCodeForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -15,7 +16,7 @@ gameCodeForm.addEventListener('submit', (e) => {
 
 window.setup = (code, btn) => {
   createCanvas(SIZE, SIZE);
-  board = new Board(code);
+  board = new Board(code, BASE_HTML);
   document.getElementsByClassName('taken')[0].innerHTML = BASE_HTML;
 };
 

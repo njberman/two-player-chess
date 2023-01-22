@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="night" class="h-screen">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -13,36 +13,55 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
-  <body>
-    <div class="main">
-      <div>
-        <script>
-          window.p5 = p5;
-        </script>
-        <script src="js/sketch.js" type="module" defer></script>
-      </div>
-      <main></main>
-      <div class="taken">
-        <h1>Taken Pieces</h1>
-        <div id="white"></div>
-        <div id="black"></div>
-      </div>
+    <!-- <link rel="stylesheet" type="text/css" href="css/style.css" /> -->
 
-      <form id="game-code-form">
-        <div>Enter game code below (leave empty for random code):</div>
-        <div>
-          Once game created, enter code on other device and start playing!
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.47.0/dist/full.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Chess Online</title>
+  </head>
+  <body class="h-full">
+    <div class="flex flex-row justify-center place-items-center h-full">
+      <script>
+        window.p5 = p5;
+      </script>
+      <script src="js/sketch.js" type="module" defer></script>
+      <main class="px-16"></main>
+
+      <div class="flex flex-col h-5/6 w-1/5" id="main">
+        <div
+          class="taken px-16 shadow-xl h-5/6 bg-slate-800 rounded-xl w-full flex flex-col justify-center align-center text-center"
+        >
+          <h1 class="text-2xl">Taken Pieces</h1>
+          <div id="white" class="h-1/3 flex flex-row"></div>
+          <div id="black" class="h-1/3 flex flex-row"></div>
         </div>
-        <div id="info"></div>
-        <div id="game-code-show"></div>
-        <div class="inputs">
-          <input type="text" id="game-code" />
-          <button type="submit">Start</button>
-        </div>
-      </form>
+
+        <form id="game-code-form">
+          <div id="info" class="invisible"></div>
+          <div id="game-code-show" class="text-xl"></div>
+          <div class="label">Enter game code below:</div>
+          <div class="inputs w-full">
+            <input
+              type="text"
+              id="game-code"
+              class="input input-bordered input-secondary"
+            />
+            <div
+              class="tooltip tooltip-secondary"
+              data-tip="Leave empty for random code.
+            Once the game is created, enter code on other device and start playing!"
+            >
+              <button class="btn btn-secondary btn-active" type="submit">
+                Start
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
 </html>

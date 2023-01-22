@@ -5,11 +5,24 @@ let board;
 
 const startButton = document.getElementById('start');
 const difficultyInput = document.getElementById('difficulty-options');
+const BASE_HTML = document.getElementsByClassName('taken')[0].innerHTML;
+
+difficultyInput.addEventListener('change', () => {
+  const diffLevelL = document.getElementById('diff-level-l');
+  const diffLevel = document.getElementById('diff-level');
+  if (difficultyInput.value === 'diff') {
+    diffLevelL.className = diffLevelL.className.replace('invisible', '');
+    diffLevel.className = diffLevel.className.replace('invisible', '');
+  } else {
+    diffLevelL.className += 'invisible';
+    diffLevel.className += 'invisible';
+  }
+});
 
 startButton.addEventListener('click', () => {
   startButton.innerText = 'Restart Game';
   const diff = difficultyInput.value;
-  const diff_level = 20;
+  const diff_level = document.getElementById('diff-level').value;
 
   window.setup(diff_level);
   board.diff = diff;
@@ -18,8 +31,8 @@ startButton.addEventListener('click', () => {
 
 window.setup = (diff_level) => {
   createCanvas(SIZE, SIZE);
-  document.getElementsByClassName('taken')[0].innerHTML =
-    '<h1>Taken Pieces</h1>';
+  select('canvas').class('rounded-lg');
+  document.getElementsByClassName('taken')[0].innerHTML = BASE_HTML;
   board = new Board(diff_level);
   noLoop();
 };

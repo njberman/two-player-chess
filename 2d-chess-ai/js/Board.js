@@ -17,9 +17,11 @@ export default class Board {
     this.checkMate = false;
 
     this.stockfish = new Worker('/2d-chess-ai/assets/stockfish2.js');
-    this.stockfish.postMessage('setoption name Skill Level value 20');
     this.stockfish.postMessage('uci');
     this.stockfish.postMessage('ucinewgame');
+    this.stockfish.postMessage(
+      'setoption name Skill Level value ' + diff_level,
+    );
     this.stockfish.addEventListener('message', (e) => console.log(e.data));
     this.depth = 10;
     this.diff = 'easy';
