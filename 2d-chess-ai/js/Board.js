@@ -1,5 +1,5 @@
 import Bishop from './Bishop.js';
-import { COLOUR, SIZE, ABC } from './constants.js';
+import { COLOUR, SIZE, ABC, APIURL } from './constants.js';
 import Pawn from './Pawn.js';
 import Rook from './Rook.js';
 import Knight from './Knight.js';
@@ -25,6 +25,12 @@ export default class Board {
     this.stockfish.addEventListener('message', (e) => console.log(e.data));
     this.depth = 10;
     this.diff = 'easy';
+    this.elo = diff_level;
+
+    // this.socket = new WebSocket(`ws${APIURL.replace('http', '')}`);
+    // this.socket.onopen = () => {
+    //   console.log('[open] Connection Established');
+    // };
 
     this.lastMove = {
       from: { x: undefined, y: undefined },
@@ -274,8 +280,29 @@ export default class Board {
             return;
           }
         });
+        // if (this.socket.readyState === 1) {
+        //   this.socket.send(`ai ${this.elo} ${convertToFen(this)}`);
+        //   this.socket.onmessage = (e) => {
+        //     if (e.data.includes('bestmove') && this.turn === COLOUR.BLACK) {
+        //       const { from, to } = this.moveToIdx(e.data.split(' ')[1]);
+        //       this.move(from, to);
+        //     }
+        //   };
+        // }
       }
     }
+  }
+
+  moveToIdx(move) {
+    const from = { x: 0, y: 0 };
+    const to = { x: 0, y: 0 };
+    const split = move.split('');
+    const abc = 'abcdefgh';
+    from.x = abc.indexOf(split[0]);
+    from.y = 8 - Number(split[1]);
+    to.x = abc.indexOf(split[2]);
+    to.y = 8 - Number(split[3]);
+    return { from, to };
   }
 
   move(from, to) {
