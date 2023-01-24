@@ -36,8 +36,3 @@ window.onclick = function (evt) {
     board.userClick(x, y);
   }
 };
-
-window.onbeforeunload = () => {
-  board.socket.onclose = () => {};
-  board.socket.close();
-};
