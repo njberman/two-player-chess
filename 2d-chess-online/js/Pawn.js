@@ -2,8 +2,8 @@ import { COLOUR } from './constants.js';
 import Piece from './Piece.js';
 import Queen from './Queen.js';
 export default class Pawn extends Piece {
-  constructor(x, y, colour, sprite) {
-    super(x, y, colour, sprite);
+  constructor(x, y, colour, sprite, hasMoved) {
+    super(x, y, colour, sprite, hasMoved);
     this.direction = this.colour === COLOUR.BLACK ? 1 : -1;
   }
 

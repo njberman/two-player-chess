@@ -111,9 +111,21 @@ export function convertToTiles(ogFen) {
       switch (char.toLowerCase()) {
         case 'p':
           if (char === 'P') {
-            tiles[i][j] = new Pawn(i, j, COLOUR.WHITE, SPRITES.white.pawn);
+            tiles[i][j] = new Pawn(
+              i,
+              j,
+              COLOUR.WHITE,
+              SPRITES.white.pawn,
+              j === 6 ? false : true,
+            );
           } else {
-            tiles[i][j] = new Pawn(i, j, COLOUR.BLACK, SPRITES.black.pawn);
+            tiles[i][j] = new Pawn(
+              i,
+              j,
+              COLOUR.BLACK,
+              SPRITES.black.pawn,
+              j === 1 ? false : true,
+            );
           }
           i++;
           break;
@@ -168,7 +180,7 @@ export function convertToTiles(ogFen) {
   for (let x = 0; x < 8; x++) {
     if (tiles[x].length > 8) tiles[x].splice(8);
   }
-
+  console.log(tiles);
   let turn = ogFen.split(' ')[1] === 'b' ? COLOUR.BLACK : COLOUR.WHITE;
   return { tiles, turn };
 }

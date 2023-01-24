@@ -20,7 +20,7 @@ export default class Piece {
       const img = document.createElement('img');
       img.src = imagePaths[prev.sprite];
       img.alt = prev.sprite;
-      img.setAttribute('class', 'w-12 h-12');
+      img.setAttribute('class', 'w-9 h-9');
       if (img.src.includes('_w')) {
         document.getElementById('white').appendChild(img);
       } else {

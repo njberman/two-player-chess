@@ -71,7 +71,7 @@ export default class Board {
               const img = document.createElement('img');
               img.src = imagePaths[sprite];
               img.alt = sprite;
-              img.setAttribute('class', 'w-12 h-12');
+              img.setAttribute('class', 'w-9 h-9');
               if (img.src.includes('_w')) {
                 document.getElementById('white').appendChild(img);
               } else {

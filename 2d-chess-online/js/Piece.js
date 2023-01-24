@@ -3,11 +3,12 @@ import { SIZE } from './constants.js';
 import imagePaths from './imagePaths.js';
 import images from './preloadImages.js';
 export default class Piece {
-  constructor(x, y, colour, sprite) {
+  constructor(x, y, colour, sprite, hasMoved) {
+    console.log(hasMoved);
     this.x = x;
     this.y = y;
     this.colour = colour;
-    this.hasMoved = false;
+    this.hasMoved = hasMoved || false;
     this.sprite = sprite;
     this.w = SIZE / 8;
   }
