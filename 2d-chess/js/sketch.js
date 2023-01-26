@@ -9,6 +9,10 @@ document
   .getElementById('restart')
   .addEventListener('click', () => window.setup());
 
+document.getElementById('flip').addEventListener('change', (e) => {
+  board.flipBool = e.target.checked;
+});
+
 window.setup = () => {
   createCanvas(SIZE, SIZE);
   select('canvas').class('rounded-lg');

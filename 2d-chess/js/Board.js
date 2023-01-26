@@ -24,6 +24,7 @@ export default class Board {
       to: { x: undefined, y: undefined },
     };
     this.started = false;
+    this.flipBool = true;
   }
 
   flip() {
@@ -264,10 +265,13 @@ export default class Board {
     this.lastMove.from = from;
     this.lastMove.to = to;
     this.started = true;
-    this.flip();
+    if (this.flipBool) {
+      this.flip();
+    }
   }
 
   isOffBoard(x, y) {
     return x > 7 || x < 0 || y > 7 || y < 0;
   }
 }
+
