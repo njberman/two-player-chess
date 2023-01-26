@@ -25,6 +25,7 @@ window.onclick = function (evt) {
   const x = mouseX;
   const y = mouseY;
   board.userClick(x, y);
-  // navigator.clipboard.writeText(convertToFen(board));
+  navigator.clipboard.writeText(convertToFen(board));
   // console.log(convertToFen(board));
 };
+
